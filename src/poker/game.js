@@ -46,7 +46,7 @@ class CommunityCards {
   }
 }
 
-class Game {
+export class Game {
   /**
    * Create a poker game object
    * @param {number} [numberOfPlayers=1] numberOfPlayers the number of players initially
@@ -55,7 +55,7 @@ class Game {
     this.communityCards = new CommunityCards();
     this.deck = new PokerDeck(1);
     this.numberOfPlayers = numberOfPlayers;
-
+    this.pot = 0;
     // assume players are sorted in correct order to deal cards
     this.players = Array.from(Array(this.numberOfPlayers), () => {
       return new Player();
@@ -75,6 +75,20 @@ class Game {
       player.getSecondCard(this.deck);
     });
   }
-  
 
+  /**
+   * Do the turn for the current player
+   */
+  updateTurn(folded, raised, raiseAmount = 0) {
+    let currentPlayer = this.players[this.playersTurn];
+
+    if (folded) {
+      currentPlayer.out = true;
+    } else if (raised) {
+      currentPlayer.loseChips(raiseAmount);
+      this.pot += raiseAmount;
+    }
+
+    this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
+  }
 }
