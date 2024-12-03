@@ -1,5 +1,6 @@
 import PokerDeck from "./deck";
 import { PokerCard } from "./card";
+import Player from "./player";
 
 class CommunityCards {
   /**
@@ -43,4 +44,37 @@ class CommunityCards {
   river(deck) {
     this.card5 = deck.draw();
   }
+}
+
+class Game {
+  /**
+   * Create a poker game object
+   * @param {number} [numberOfPlayers=1] numberOfPlayers the number of players initially
+   */
+  constructor(numberOfPlayers = 1) {
+    this.communityCards = new CommunityCards();
+    this.deck = new PokerDeck(1);
+    this.numberOfPlayers = numberOfPlayers;
+
+    // assume players are sorted in correct order to deal cards
+    this.players = Array.from(Array(this.numberOfPlayers), () => {
+      return new Player();
+    });
+
+    this.playersTurn = 0;
+  }
+
+  /**
+   * Give players their cards
+   */
+  givePlayersCards() {
+    this.players.forEach((player) => {
+      player.getFirstCard(this.deck);
+    });
+    this.players.forEach((player) => {
+      player.getSecondCard(this.deck);
+    });
+  }
+  
+
 }

@@ -41,7 +41,7 @@ export default class Player {
    * Get the players second card for hand
    * @param {PokerDeck} deck deck to draw from
    */
-  getFirstCard(deck) {
+  getSecondCard(deck) {
     this.hand.card2 = deck.draw();
   }
 
