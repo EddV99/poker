@@ -25,11 +25,13 @@ export default class Player {
    * Create a poker player object
    * @param {number} [chipCount=1000] the initial amount of chips this player has
    * @param {boolean} [out=false] is the player in or out of the current round
+   * @param {number} [position=0] the seating position of the player 
    */
-  constructor(chipCount = 1000, out = false) {
+  constructor(chipCount = 1000, out = false, position = 0) {
     this.hand = new PokerHand();
     this.chips = chipCount;
     this.out = out;
+    this.seatingPosition = position;
   }
 
   /**

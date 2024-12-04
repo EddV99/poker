@@ -282,3 +282,4 @@ export const cardSpriteSheetData = {
     scale: 1,
   },
 };
+

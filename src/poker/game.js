@@ -55,15 +55,21 @@ export class Game {
     this.communityCards = new CommunityCards();
     this.deck = new PokerDeck(1);
     this.numberOfPlayers = numberOfPlayers;
+
+    this.players = [];
     // assume players are sorted in correct order to deal cards
-    this.players = Array.from(Array(this.numberOfPlayers), () => {
-      return new Player();
-    });
+    for (let position = 0; position < this.numberOfPlayers; position++) {
+      this.players.push(new Player(1000, false, position));
+    }
 
     this.pot = 0;
     this.playersTurn = 0;
+
     this.smallBlindPos = 0;
-    this.bigBlindPos = 0;
+    this.bigBlindPos = 1;
+    this.smallBlindAmount = 50;
+    this.bigBlindAmount = 100;
+
     this.highestBetSize = 0;
   }
 
@@ -110,8 +116,7 @@ export class Game {
   }
 
   /**
-    * Update the game
-    */
-  update(){
-  }
+   * Update the game
+   */
+  update() {}
 }
