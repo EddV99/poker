@@ -71,18 +71,19 @@ export class Game {
     this.bigBlindAmount = 100;
 
     this.highestBetSize = 0;
+
+    this.givingPlayersCards = true;
+    this.gaveFirstCard = false;
   }
 
   /**
    * Give players their cards
    */
-  givePlayersCards() {
-    this.players.forEach((player) => {
-      player.getFirstCard(this.deck);
-    });
-    this.players.forEach((player) => {
-      player.getSecondCard(this.deck);
-    });
+  givePlayerCards() {
+    let player = this.players[this.playersTurn];
+
+    if (!player.hand.card1) player.getFirstCard(this.deck);
+    else player.getSecondCard(this.deck);
   }
 
   /**
@@ -118,5 +119,16 @@ export class Game {
   /**
    * Update the game
    */
-  update() {}
+  update() {
+    if (this.givingPlayersCards) {
+      this.givePlayerCards();
+      this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
+
+      if (this.playersTurn === 0 && this.gaveFirstCard) {
+        this.givingPlayersCards = false;
+      } else if (this.playersTurn === 0) {
+        this.gaveFirstCard = true;
+      }
+    }
+  }
 }

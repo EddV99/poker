@@ -283,3 +283,123 @@ export const cardSpriteSheetData = {
   },
 };
 
+export function getTexture(textures, suit, rank) {
+  switch (suit) {
+    case Suit.HEARTS:
+      switch (rank) {
+        case Rank.ACE:
+          return textures.HA;
+        case Rank.KING:
+          return textures.HK;
+        case Rank.QUEEN:
+          return textures.HQ;
+        case Rank.JACK:
+          return textures.HJ;
+        case Rank.TEN:
+          return textures.H10;
+        case Rank.NINE:
+          return textures.H9;
+        case Rank.EIGHT:
+          return textures.H8;
+        case Rank.SEVEN:
+          return textures.H7;
+        case Rank.SIX:
+          return textures.H6;
+        case Rank.FIVE:
+          return textures.H5;
+        case Rank.FOUR:
+          return textures.H4;
+        case Rank.THREE:
+          return textures.H3;
+        case Rank.TWO:
+          return textures.H2;
+      }
+    case Suit.DIAMONDS:
+      switch (rank) {
+        case Rank.ACE:
+          return textures.DA;
+        case Rank.KING:
+          return textures.DK;
+        case Rank.QUEEN:
+          return textures.DQ;
+        case Rank.JACK:
+          return textures.DJ;
+        case Rank.TEN:
+          return textures.D10;
+        case Rank.NINE:
+          return textures.D9;
+        case Rank.EIGHT:
+          return textures.D8;
+        case Rank.SEVEN:
+          return textures.D7;
+        case Rank.SIX:
+          return textures.D6;
+        case Rank.FIVE:
+          return textures.D5;
+        case Rank.FOUR:
+          return textures.D4;
+        case Rank.THREE:
+          return textures.D3;
+        case Rank.TWO:
+          return textures.D2;
+      }
+    case Suit.SPADES:
+      switch (rank) {
+        case Rank.ACE:
+          return textures.SA;
+        case Rank.KING:
+          return textures.SK;
+        case Rank.QUEEN:
+          return textures.SQ;
+        case Rank.JACK:
+          return textures.SJ;
+        case Rank.TEN:
+          return textures.S10;
+        case Rank.NINE:
+          return textures.S9;
+        case Rank.EIGHT:
+          return textures.S8;
+        case Rank.SEVEN:
+          return textures.S7;
+        case Rank.SIX:
+          return textures.S6;
+        case Rank.FIVE:
+          return textures.S5;
+        case Rank.FOUR:
+          return textures.S4;
+        case Rank.THREE:
+          return textures.S3;
+        case Rank.TWO:
+          return textures.S2;
+      }
+    case Suit.CLUBS:
+      switch (rank) {
+        case Rank.ACE:
+          return textures.CA;
+        case Rank.KING:
+          return textures.CK;
+        case Rank.QUEEN:
+          return textures.CQ;
+        case Rank.JACK:
+          return textures.CJ;
+        case Rank.TEN:
+          return textures.C10;
+        case Rank.NINE:
+          return textures.C9;
+        case Rank.EIGHT:
+          return textures.C8;
+        case Rank.SEVEN:
+          return textures.C7;
+        case Rank.SIX:
+          return textures.C6;
+        case Rank.FIVE:
+          return textures.C5;
+        case Rank.FOUR:
+          return textures.C4;
+        case Rank.THREE:
+          return textures.C3;
+        case Rank.TWO:
+          return textures.C2;
+      }
+  }
+}

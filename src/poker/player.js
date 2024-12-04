@@ -71,4 +71,8 @@ export default class Player {
   clear() {
     this.hand.clear();
   }
+
+  /**
+   * Draw
+   */
 }
