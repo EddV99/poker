@@ -55,13 +55,16 @@ export class Game {
     this.communityCards = new CommunityCards();
     this.deck = new PokerDeck(1);
     this.numberOfPlayers = numberOfPlayers;
-    this.pot = 0;
     // assume players are sorted in correct order to deal cards
     this.players = Array.from(Array(this.numberOfPlayers), () => {
       return new Player();
     });
 
+    this.pot = 0;
     this.playersTurn = 0;
+    this.smallBlindPos = 0;
+    this.bigBlindPos = 0;
+    this.highestBetSize = 0;
   }
 
   /**
@@ -90,5 +93,25 @@ export class Game {
     }
 
     this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
+  }
+
+  /**
+   * End of round
+   * @param {Player[]} winners the winners of this round
+   * @param {number[]} winnings winnings for the winners of this round
+   */
+  endRound(winners, winnings) {
+    winners.forEach((player, index) => {
+      player.getChips(winnings[index]);
+    });
+    this.pot = 0;
+    this.smallBlindPos = (this.smallBlindPos + 1) % this.numberOfPlayers;
+    this.bigBlindPos = (this.bigBlindPos + 1) % this.numberOfPlayers;
+  }
+
+  /**
+    * Update the game
+    */
+  update(){
   }
 }

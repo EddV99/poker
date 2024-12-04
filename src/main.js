@@ -29,4 +29,5 @@ cardSprite.setSize(64);
 app.stage.addChild(cardSprite);
 
 app.ticker.add((time) => {
+  game.update();
 });
