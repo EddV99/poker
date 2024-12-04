@@ -13,7 +13,7 @@ div.appendChild(app.canvas);
 await loadTextures();
 
 let game = new Game(3);
-let controls = new Controls(game);
+let controls = new Controls();
 
 drawUI(app, controls);
 
@@ -33,12 +33,8 @@ let initX = app.screen.width / (game.numberOfPlayers * 128);
 // offset between players
 let offset = 200;
 
-
-function drawPlayers() {
-
-}
-
 app.ticker.add((time) => {
-  game.update();
-  drawPlayers();
+  let action = controls.getInput();
+  game.update(action);
+  controls.reset();
 });
