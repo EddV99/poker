@@ -1,6 +1,8 @@
 import PokerDeck from "./deck";
 import { PokerCard } from "./card";
 import Player from "./player";
+import Controls from "../controls/controls";
+import { Actions } from "../controls/controls";
 
 class CommunityCards {
   /**
@@ -44,14 +46,23 @@ class CommunityCards {
   river(deck) {
     this.card5 = deck.draw();
   }
+
+  reset() {
+    this.card1 = null;
+    this.card2 = null;
+    this.card3 = null;
+    this.card4 = null;
+    this.card5 = null;
+  }
 }
 
 export class Game {
   /**
    * Create a poker game object
    * @param {number} [numberOfPlayers=1] numberOfPlayers the number of players initially
+   * @param {Controls} controls
    */
-  constructor(numberOfPlayers = 1) {
+  constructor(numberOfPlayers, controls) {
     this.communityCards = new CommunityCards();
     this.deck = new PokerDeck(1);
     this.numberOfPlayers = numberOfPlayers;
@@ -62,18 +73,30 @@ export class Game {
       this.players.push(new Player(1000, false, position));
     }
 
+    this.bets = Array(this.numberOfPlayers).fill(0);
+
     this.pot = 0;
     this.playersTurn = 0;
 
     this.smallBlindPos = 0;
-    this.bigBlindPos = 1;
     this.smallBlindAmount = 50;
+
+    this.bigBlindPos = 1;
     this.bigBlindAmount = 100;
 
-    this.highestBetSize = 0;
+    this.turnEndsOn = -1;
+    this.turnEnded = false;
 
+    this.highestBetSize = 0;
     this.givingPlayersCards = true;
     this.gaveFirstCard = false;
+
+    this.startOfRound = false;
+    this.controls = controls;
+
+    this.isFlop = true;
+    this.isTurn = false;
+    this.isRiver = false;
   }
 
   /**
@@ -88,18 +111,61 @@ export class Game {
 
   /**
    * Do the turn for the current player
+   * @param {Actions} action
    */
-  updateTurn(folded, raised, raiseAmount = 0) {
+  updateTurn(action) {
     let currentPlayer = this.players[this.playersTurn];
+    let difference = this.highestBetSize - this.bets[this.playersTurn];
+    let canCheck = difference === 0;
+    this.turnEnded = this.playersTurn === this.turnEndsOn;
 
-    if (folded) {
-      currentPlayer.out = true;
-    } else if (raised) {
-      currentPlayer.loseChips(raiseAmount);
-      this.pot += raiseAmount;
+    if (!currentPlayer.out) {
+      if (Actions.CALL === action) {
+        this.pot += difference;
+        currentPlayer.loseChips(difference);
+      } else if (Actions.FOLD === action) {
+        currentPlayer.out = true;
+      } else if (Actions.RAISE === action) {
+        // TODO: ui for raises and check if can call with amount
+        let raise = 10;
+        currentPlayer.loseChips(raise);
+        this.pot += raise;
+        this.highestBetSize += raise;
+        this.turnEndsOn = this.playersTurn;
+        if (this.turnEnded) {
+          this.turnEnded = false;
+        }
+      }
+
+      if (!(Actions.CALL === action && !canCheck)) {
+        this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
+      }
+    } else {
+      this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
     }
+  }
 
-    this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
+  /**
+   *
+   *
+   */
+  endTurn() {
+    this.bets = Array(this.numberOfPlayers).fill(0);
+    if (this.isFlop) {
+      this.isFlop = false;
+      this.isTurn = true;
+      this.isRiver = false;
+      this.communityCards.flop(this.deck);
+    } else if (this.isTurn) {
+      this.isRiver = true;
+      this.isTurn = false;
+      this.communityCards.turn(this.deck);
+    } else if (this.isRiver) {
+      this.isRiver = false;
+      this.communityCards.river(this.deck);
+    } else {
+      this.endRound();
+    }
   }
 
   /**
@@ -114,21 +180,49 @@ export class Game {
     this.pot = 0;
     this.smallBlindPos = (this.smallBlindPos + 1) % this.numberOfPlayers;
     this.bigBlindPos = (this.bigBlindPos + 1) % this.numberOfPlayers;
+    this.playersTurn = 0;
+    this.givingPlayersCards = true;
+    this.communityCards.reset();
+    this.players.forEach((player) => {
+      player.clear();
+    });
+    this.isFlop = true;
+    // TODO: reshuffle cards
   }
 
   /**
    * Update the game
+   * @param {Actions} action
    */
-  update() {
+  update(action) {
     if (this.givingPlayersCards) {
       this.givePlayerCards();
       this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
 
       if (this.playersTurn === 0 && this.gaveFirstCard) {
         this.givingPlayersCards = false;
+        this.startOfRound = true;
       } else if (this.playersTurn === 0) {
         this.gaveFirstCard = true;
       }
+    } else if (this.startOfRound) {
+      // TODO: check if could be all in!
+      this.players[this.bigBlindPos].loseChips(this.bigBlindAmount);
+      this.players[this.smallBlindPos].loseChips(this.smallBlindAmount);
+
+      this.pot += this.bigBlindAmount;
+      this.pot += this.smallBlindAmount;
+
+      this.highestBetSize = this.bigBlindAmount;
+      this.playersTurn = (this.bigBlindPos + 1) % this.numberOfPlayers;
+
+      this.turnEndsOn = this.bigBlindPos;
+      this.turnEnded = false;
+
+      this.startOfRound = false;
+    } else {
+      this.updateTurn(action);
+      if (this.turnEnded) this.endTurn();
     }
   }
 }
