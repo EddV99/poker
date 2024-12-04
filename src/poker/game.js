@@ -145,6 +145,10 @@ export class Game {
     }
   }
 
+  checkWinners() {
+    return { winners: [], winnings: [] };
+  }
+
   /**
    *
    *
@@ -164,8 +168,11 @@ export class Game {
       this.isRiver = false;
       this.communityCards.river(this.deck);
     } else {
-      this.endRound();
+      let win = this.checkWinners();
+      this.endRound(win.winners, win.winnings);
+      return;
     }
+    this.playersTurn = (this.bigBlindPos + 1) % this.numberOfPlayers;
   }
 
   /**
