@@ -6,19 +6,19 @@ export const Suit = {
 };
 
 export const Rank = {
-  ACE: 14,
-  KING: 13,
-  QUEEN: 12,
-  JACK: 11,
-  TEN: 10,
-  NINE: 9,
-  EIGHT: 8,
-  SEVEN: 7,
-  SIX: 6,
-  FIVE: 5,
-  FOUR: 4,
-  THREE: 3,
-  TWO: 2,
+  ACE: 12,
+  KING: 11,
+  QUEEN: 10,
+  JACK: 9,
+  TEN: 8,
+  NINE: 7,
+  EIGHT: 6,
+  SEVEN: 5,
+  SIX: 4,
+  FIVE: 3,
+  FOUR: 2,
+  THREE: 1,
+  TWO: 0,
 };
 
 export class PokerCard {
