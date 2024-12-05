@@ -65,6 +65,8 @@ export class Game {
   constructor(numberOfPlayers, controls) {
     this.communityCards = new CommunityCards();
     this.deck = new PokerDeck(1);
+    this.deck.shuffle();
+
     this.numberOfPlayers = numberOfPlayers;
 
     this.players = [];
@@ -199,7 +201,9 @@ export class Game {
       player.clear();
     });
     this.isFlop = true;
-    // TODO: reshuffle cards
+    this.turnEnded = false;
+    this.deck.reset();
+    this.deck.shuffle();
   }
 
   /**

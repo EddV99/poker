@@ -11,9 +11,19 @@ export default class PokerDeck {
   }
 
   changeNumberOfSets(numberOfSets) {
+    /**
+     * @type {number}
+     */
     this.numberOfSets = numberOfSets;
+    /**
+     * @type {PokerCard[]}
+     */
     this.cards = [];
+    /**
+     * @type {number}
+     */
     this.count = 0;
+
     for (let i = 0; i < this.numberOfSets; i++) {
       [Suit.HEARTS, Suit.CLUBS, Suit.SPADES, Suit.DIAMONDS].forEach((suit) => {
         [
@@ -40,9 +50,23 @@ export default class PokerDeck {
 
   /**
    * Shuffle the deck of cards
+   *
+   * Use Fisher-Yates shuffle
+   *
+   * for i from 0 to n−2 do
+   *      j ← random integer such that i ≤ j ≤ n-1
+   *      exchange a[i] and a[j]
    */
   shuffle() {
-    // TODO: Implement
+    let n = this.cards.length;
+    for (let i = 0; i < n - 2; ++i) {
+      let j = Math.floor(Math.random() * (n - 1 - i + 1) + i);
+      let t = { rank: this.cards[i].rank, suit: this.cards[i].suit };
+      this.cards[i].rank = this.cards[j].rank;
+      this.cards[i].suit = this.cards[j].suit;
+      this.cards[j].rank = t.rank;
+      this.cards[j].suit = t.suit;
+    }
   }
 
   /**
