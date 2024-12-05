@@ -1,14 +1,16 @@
 import Player from "../poker/player";
 import { cardSpriteSheetData, getTexture } from "../data/spriteSheetData";
 import * as PIXI from "pixi.js";
+import { Game } from "../poker/game";
 
 export class Drawer {
   /**
    * Create a drawer object
    * @param {Player[]} players
    * @param {PIXI.Application} app
+   * @param {Game} game
    */
-  constructor(players, app) {
+  constructor(game, players, app) {
     this.app = app;
     this.players = players;
     /**
@@ -20,6 +22,7 @@ export class Drawer {
     this.backOfCardTexture = null;
     this.spritesheet = null;
     this.sizeOfCard = 32;
+    this.game = game;
   }
 
   async loadTextures() {
@@ -31,6 +34,16 @@ export class Drawer {
 
     this.spritesheet = new PIXI.Spritesheet(this.spriteSheetTexture, cardSpriteSheetData);
     this.spritesheet.parse();
+
+    this.cursorSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    this.cursorSprite.position.set(0, 0);
+    this.cursorSprite.setSize(10);
+    this.app.stage.addChild(this.cursorSprite);
+
+    await PIXI.Assets.load('inter');
+    this.potText = new PIXI.Text({text: "Pot:", fontFamily: "inter"});;
+    this.potText.position.set(0, 210);
+    this.app.stage.addChild(this.potText);
   }
 
   draw() {
@@ -44,6 +57,13 @@ export class Drawer {
         ? getTexture(this.spritesheet.textures, p.hand.card2.suit, p.hand.card2.rank)
         : this.backOfCardTexture;
     });
+
+    let x = this.game.playersTurn * this.sizeOfCard * 2 + this.sizeOfCard - 5;
+    let y = this.app.screen.height / 2 + this.sizeOfCard;
+    this.cursorSprite.position.set(x, y);
+    
+    this.potText.text = `Pot: ${this.game.pot}`;
+     
   }
 
   /**
