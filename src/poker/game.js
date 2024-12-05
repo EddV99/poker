@@ -117,6 +117,7 @@ export class Game {
     if (Actions.NONE === action) {
       return;
     }
+
     let currentPlayer = this.players[this.playersTurn];
     let difference = this.highestBetSize - this.bets[this.playersTurn];
     let canCheck = difference === 0;
@@ -175,6 +176,7 @@ export class Game {
       this.endRound(win.winners, win.winnings);
       return;
     }
+    this.turnEnded = false;
     this.playersTurn = (this.bigBlindPos + 1) % this.numberOfPlayers;
   }
 
@@ -216,6 +218,7 @@ export class Game {
         this.gaveFirstCard = true;
       }
     } else if (this.startOfRound) {
+      this.gaveFirstCard = false;
       // TODO: check if could be all in!
       this.players[this.bigBlindPos].loseChips(this.bigBlindAmount);
       this.players[this.smallBlindPos].loseChips(this.smallBlindAmount);
