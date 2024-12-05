@@ -116,9 +116,7 @@ export class Game {
    * @param {Actions} action
    */
   updateTurn(action) {
-    if (Actions.NONE === action) {
-      return;
-    }
+    if (action === Actions.NONE) return;
 
     let currentPlayer = this.players[this.playersTurn];
     let difference = this.highestBetSize - this.bets[this.playersTurn];
@@ -142,7 +140,6 @@ export class Game {
           this.turnEnded = false;
         }
       }
-
       if (!(Actions.CHECK === action && !canCheck)) {
         this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
       }
@@ -161,6 +158,7 @@ export class Game {
    */
   endTurn() {
     this.bets = Array(this.numberOfPlayers).fill(0);
+    this.highestBetSize = 0;
     if (this.isFlop) {
       this.isFlop = false;
       this.isTurn = true;
@@ -226,6 +224,9 @@ export class Game {
       // TODO: check if could be all in!
       this.players[this.bigBlindPos].loseChips(this.bigBlindAmount);
       this.players[this.smallBlindPos].loseChips(this.smallBlindAmount);
+
+      this.bets[this.bigBlindPos] = this.bigBlindAmount;
+      this.bets[this.smallBlindPos] = this.smallBlindAmount;
 
       this.pot += this.bigBlindAmount;
       this.pot += this.smallBlindAmount;
