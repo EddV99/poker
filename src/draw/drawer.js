@@ -23,6 +23,7 @@ export class Drawer {
     this.spritesheet = null;
     this.sizeOfCard = 32;
     this.game = game;
+    this.communityCards = null;
   }
 
   async loadTextures() {
@@ -40,8 +41,8 @@ export class Drawer {
     this.cursorSprite.setSize(10);
     this.app.stage.addChild(this.cursorSprite);
 
-    await PIXI.Assets.load('inter');
-    this.potText = new PIXI.Text({text: "Pot:", fontFamily: "inter"});;
+    await PIXI.Assets.load("inter");
+    this.potText = new PIXI.Text({ text: "Pot:", fontFamily: "inter" });
     this.potText.position.set(0, 210);
     this.app.stage.addChild(this.potText);
   }
@@ -61,9 +62,28 @@ export class Drawer {
     let x = this.game.playersTurn * this.sizeOfCard * 2 + this.sizeOfCard - 5;
     let y = this.app.screen.height / 2 + this.sizeOfCard;
     this.cursorSprite.position.set(x, y);
-    
+
     this.potText.text = `Pot: ${this.game.pot}`;
-     
+
+    this.communityCards.getChildAt(0).texture = this.game.communityCards.card1
+      ? getTexture(this.game.communityCards.card1.suit, this.game.communityCards.card1.rank)
+      : this.backOfCardTexture;
+
+    this.communityCards.getChildAt(1).texture = this.game.communityCards.card2
+      ? getTexture(this.game.communityCards.card2.suit, this.game.communityCards.card2.rank)
+      : this.backOfCardTexture;
+
+    this.communityCards.getChildAt(2).texture = this.game.communityCards.card3
+      ? getTexture(this.game.communityCards.card3.suit, this.game.communityCards.card3.rank)
+      : this.backOfCardTexture;
+
+    this.communityCards.getChildAt(3).texture = this.game.communityCards.card4
+      ? getTexture(this.game.communityCards.card4.suit, this.game.communityCards.card4.rank)
+      : this.backOfCardTexture;
+
+    this.communityCards.getChildAt(4).texture = this.game.communityCards.card5
+      ? getTexture(this.game.communityCards.card5.suit, this.game.communityCards.card5.rank)
+      : this.backOfCardTexture;
   }
 
   /**
@@ -102,5 +122,40 @@ export class Drawer {
       this.playerSprites.push(playerSprite);
       this.app.stage.addChild(playerSprite);
     });
+    this.communityCards = new PIXI.Container();
+
+    let c1 = new PIXI.Sprite(
+      this.game.communityCards.card1
+        ? getTexture(this.game.communityCards.card1.suit, this.game.communityCards.card1.rank)
+        : this.backOfCardTexture,
+    );
+    c1.position.set(0, 0);
+    let c2 = new PIXI.Sprite(
+      this.game.communityCards.card2
+        ? getTexture(this.game.communityCards.card2.suit, this.game.communityCards.card2.rank)
+        : this.backOfCardTexture,
+    );
+    c2.position.set(this.sizeOfCard, 0);
+    let c3 = new PIXI.Sprite(
+      this.game.communityCards.card3
+        ? getTexture(this.game.communityCards.card3.suit, this.game.communityCards.card3.rank)
+        : this.backOfCardTexture,
+    );
+    c3.position.set(this.sizeOfCard * 2, 0);
+    let c4 = new PIXI.Sprite(
+      this.game.communityCards.card4
+        ? getTexture(this.game.communityCards.card4.suit, this.game.communityCards.card4.rank)
+        : this.backOfCardTexture,
+    );
+    c4.position.set(this.sizeOfCard * 3, 0);
+    let c5 = new PIXI.Sprite(
+      this.game.communityCards.card5
+        ? getTexture(this.game.communityCards.card5.suit, this.game.communityCards.card5.rank)
+        : this.backOfCardTexture,
+    );
+    c5.position.set(this.sizeOfCard * 4, 0);
+    this.communityCards.addChild(c1, c2, c3, c4, c5);
+    this.communityCards.position.set(this.app.screen.width / 2 - this.sizeOfCard * 2.5, 100);
+    this.app.stage.addChild(this.communityCards);
   }
 }

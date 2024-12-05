@@ -2,7 +2,6 @@ import * as PIXI from "pixi.js";
 import { drawUI, loadTextures } from "./ui/ui";
 import { Game } from "./poker/game";
 import Controls from "./controls/controls";
-import { cardSpriteSheetData, getTexture } from "./data/spriteSheetData";
 import { Drawer } from "./draw/drawer";
 
 const div = document.getElementById("game");
