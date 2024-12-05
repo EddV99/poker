@@ -7,8 +7,13 @@ export default class PokerDeck {
    * @param {number} numberOfSets the number of sets in this deck of cards
    */
   constructor(numberOfSets = 1) {
-    this.cards = [];
+    this.changeNumberOfSets(numberOfSets);
+  }
+
+  changeNumberOfSets(numberOfSets) {
     this.numberOfSets = numberOfSets;
+    this.cards = [];
+    this.count = 0;
     for (let i = 0; i < this.numberOfSets; i++) {
       [Suit.HEARTS, Suit.CLUBS, Suit.SPADES, Suit.DIAMONDS].forEach((suit) => {
         [
@@ -27,6 +32,7 @@ export default class PokerDeck {
           Rank.TWO,
         ].forEach((rank) => {
           this.cards.push(new PokerCard(suit, rank));
+          this.count += 1;
         });
       });
     }
@@ -40,12 +46,23 @@ export default class PokerDeck {
   }
 
   /**
+   * Reset the deck
+   */
+  reset() {
+    this.changeNumberOfSets(this.numberOfSets);
+  }
+
+  /**
    * Draw and remove a card from the deck
    * @returns {PokerCard} the drawn card
    */
   draw() {
+    if (this.count <= 0) return;
+
     let card = this.cards[this.cards.length - 1];
     this.cards.pop();
+    this.count--;
+
     return card;
   }
 }
