@@ -162,7 +162,7 @@ export const cardSpriteSheetData = {
       sourceSize: { w: 32, h: 32 },
       spriteSourceSize: { x: 0, y: 0, w: 32, h: 32 },
     },
-    C10: {
+    H10: {
       frame: { x: getX(Suit.HEARTS, Rank.TEN), y: 0, w: 32, h: 32 },
       sourceSize: { w: 32, h: 32 },
       spriteSourceSize: { x: 0, y: 0, w: 32, h: 32 },
@@ -229,7 +229,7 @@ export const cardSpriteSheetData = {
       sourceSize: { w: 32, h: 32 },
       spriteSourceSize: { x: 0, y: 0, w: 32, h: 32 },
     },
-    C10: {
+    S10: {
       frame: { x: getX(Suit.SPADES, Rank.TEN), y: 0, w: 32, h: 32 },
       sourceSize: { w: 32, h: 32 },
       spriteSourceSize: { x: 0, y: 0, w: 32, h: 32 },
