@@ -21,7 +21,7 @@ export class Drawer {
     this.spriteSheetTexture = null;
     this.backOfCardTexture = null;
     this.spritesheet = null;
-    this.sizeOfCard = 32;
+    this.sizeOfCard = 64;
     this.game = game;
     this.communityCards = null;
 
@@ -133,11 +133,13 @@ export class Drawer {
         p.hand.card1 ? getTexture(p.hand.card1.suit, p.hand.card1.rank) : this.backOfCardTexture,
       );
       card1.position.set(0, 0);
+      card1.setSize(this.sizeOfCard);
 
       let card2 = new PIXI.Sprite(
         p.hand.card2 ? getTexture(p.hand.card2.suit, p.hand.card2.rank) : this.backOfCardTexture,
       );
       card2.position.set(this.sizeOfCard, 0);
+      card2.setSize(this.sizeOfCard);
 
       playerSprite.addChild(card1);
       playerSprite.addChild(card2);
@@ -154,30 +156,35 @@ export class Drawer {
         : this.backOfCardTexture,
     );
     c1.position.set(0, 0);
+    c1.setSize(this.sizeOfCard);
     let c2 = new PIXI.Sprite(
       this.game.communityCards.card2
         ? getTexture(this.game.communityCards.card2.suit, this.game.communityCards.card2.rank)
         : this.backOfCardTexture,
     );
     c2.position.set(this.sizeOfCard, 0);
+    c2.setSize(this.sizeOfCard);
     let c3 = new PIXI.Sprite(
       this.game.communityCards.card3
         ? getTexture(this.game.communityCards.card3.suit, this.game.communityCards.card3.rank)
         : this.backOfCardTexture,
     );
     c3.position.set(this.sizeOfCard * 2, 0);
+    c3.setSize(this.sizeOfCard);
     let c4 = new PIXI.Sprite(
       this.game.communityCards.card4
         ? getTexture(this.game.communityCards.card4.suit, this.game.communityCards.card4.rank)
         : this.backOfCardTexture,
     );
     c4.position.set(this.sizeOfCard * 3, 0);
+    c4.setSize(this.sizeOfCard);
     let c5 = new PIXI.Sprite(
       this.game.communityCards.card5
         ? getTexture(this.game.communityCards.card5.suit, this.game.communityCards.card5.rank)
         : this.backOfCardTexture,
     );
     c5.position.set(this.sizeOfCard * 4, 0);
+    c5.setSize(this.sizeOfCard);
     this.communityCards.addChild(c1, c2, c3, c4, c5);
     this.communityCards.position.set(this.app.screen.width / 2 - this.sizeOfCard * 2.5, 100);
     this.app.stage.addChild(this.communityCards);
