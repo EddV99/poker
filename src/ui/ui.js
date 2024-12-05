@@ -4,11 +4,13 @@ import Controls from "../controls/controls";
 let checkButtonTexture = null;
 let foldButtonTexture = null;
 let raiseButtonTexture = null;
+let callButtonTexture = null;
 
 export async function loadTextures() {
   checkButtonTexture = await PIXI.Assets.load("check-button.png");
   foldButtonTexture = await PIXI.Assets.load("fold-button.png");
   raiseButtonTexture = await PIXI.Assets.load("raise-button.png");
+  callButtonTexture = await PIXI.Assets.load("call-button.png");
 }
 
 /**
@@ -58,4 +60,16 @@ export function drawUI(app, controls) {
   raiseButton.eventMode = "static";
 
   app.stage.addChild(raiseButton);
+
+  const callButton = new PIXI.Sprite(callButtonTexture);
+  callButton.width = WIDTH;
+  callButton.height = HEIGHT;
+  callButton.position.set(POS_X, POS_Y + 3 * OFFSET);
+
+  callButton.on("pointerdown", (event) => {
+    controls.pressCallButton();
+  });
+  callButton.eventMode = "static";
+
+  app.stage.addChild(callButton);
 }

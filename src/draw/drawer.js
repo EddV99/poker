@@ -72,6 +72,8 @@ export class Drawer {
           ? getTexture(this.spritesheet.textures, p.hand.card2.suit, p.hand.card2.rank)
           : this.backOfCardTexture;
 
+      sprite.getChildAt(2).text = `${p.chips}`;
+
       if(this.game.bigBlindPos === i){
         this.bigBlindText.position.set(sprite.position.x + this.sizeOfCard / 2, sprite.position.y - this.sizeOfCard);
       }
@@ -125,8 +127,8 @@ export class Drawer {
 
   createSprites() {
     this.players.forEach((p) => {
-      let x = 1.2 * p.seatingPosition * this.sizeOfCard * 2;
-      let y = this.app.screen.height / 2;
+      let x = 1.2 * p.seatingPosition * this.sizeOfCard * 2 + 100;
+      let y = this.app.screen.height / 2 + 100;
 
       let playerSprite = new PIXI.Container();
       let card1 = new PIXI.Sprite(
@@ -141,8 +143,12 @@ export class Drawer {
       card2.position.set(this.sizeOfCard, 0);
       card2.setSize(this.sizeOfCard);
 
+      let chipsText = new PIXI.Text({ text: "", fontFamily: "inter" });
+      chipsText.position.set(this.sizeOfCard / 2, this.sizeOfCard);
+
       playerSprite.addChild(card1);
       playerSprite.addChild(card2);
+      playerSprite.addChild(chipsText);
 
       playerSprite.position.set(x, y);
       this.playerSprites.push(playerSprite);
