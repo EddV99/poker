@@ -114,6 +114,9 @@ export class Game {
    * @param {Actions} action
    */
   updateTurn(action) {
+    if (Actions.NONE === action) {
+      return;
+    }
     let currentPlayer = this.players[this.playersTurn];
     let difference = this.highestBetSize - this.bets[this.playersTurn];
     let canCheck = difference === 0;
