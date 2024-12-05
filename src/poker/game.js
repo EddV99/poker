@@ -140,7 +140,7 @@ export class Game {
         }
       }
 
-      if (!(Actions.CALL === action && !canCheck)) {
+      if (!(Actions.CHECK === action && !canCheck)) {
         this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
       }
     } else {
