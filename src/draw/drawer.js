@@ -24,6 +24,9 @@ export class Drawer {
     this.sizeOfCard = 32;
     this.game = game;
     this.communityCards = null;
+
+    this.smallBlindText = null;
+    this.bigBlindText = null;
   }
 
   async loadTextures() {
@@ -42,47 +45,68 @@ export class Drawer {
     this.app.stage.addChild(this.cursorSprite);
 
     await PIXI.Assets.load("inter");
-    this.potText = new PIXI.Text({ text: "Pot:", fontFamily: "inter" });
-    this.potText.position.set(0, 210);
+    this.potText = new PIXI.Text({ text: "Pot", fontFamily: "inter" });
+    this.potText.position.set(this.app.screen.width / 2 - 15, 210);
     this.app.stage.addChild(this.potText);
+
+    this.smallBlindText = new PIXI.Text({ text: "SB", fontFamily: "inter" });
+    this.smallBlindText.position.set(0, 0);
+    this.app.stage.addChild(this.smallBlindText);
+
+    this.bigBlindText = new PIXI.Text({ text: "BB", fontFamily: "inter" });
+    this.bigBlindText.position.set(0, 0);
+    this.app.stage.addChild(this.bigBlindText);
   }
 
   draw() {
+    // draw player cards
     this.players.forEach((p, i) => {
       let sprite = this.playerSprites[i];
-      sprite.getChildAt(0).texture = p.hand.card1
-        ? getTexture(this.spritesheet.textures, p.hand.card1.suit, p.hand.card1.rank)
-        : this.backOfCardTexture;
+      sprite.getChildAt(0).texture =
+        p.hand.card1 !== null
+          ? getTexture(this.spritesheet.textures, p.hand.card1.suit, p.hand.card1.rank)
+          : this.backOfCardTexture;
 
-      sprite.getChildAt(1).texture = p.hand.card2
-        ? getTexture(this.spritesheet.textures, p.hand.card2.suit, p.hand.card2.rank)
-        : this.backOfCardTexture;
+      sprite.getChildAt(1).texture =
+        p.hand.card2 !== null
+          ? getTexture(this.spritesheet.textures, p.hand.card2.suit, p.hand.card2.rank)
+          : this.backOfCardTexture;
+
+      if(this.game.bigBlindPos === i){
+        this.bigBlindText.position.set(sprite.position.x + this.sizeOfCard / 2, sprite.position.y - this.sizeOfCard);
+      }
+      if(this.game.smallBlindPos === i){
+        this.smallBlindText.position.set(sprite.position.x + this.sizeOfCard / 2, sprite.position.y - this.sizeOfCard);
+      }
     });
 
-    let x = this.game.playersTurn * this.sizeOfCard * 2 + this.sizeOfCard - 5;
+    // draw current player cursor
+    let x = this.playerSprites[this.game.playersTurn].position.x + this.sizeOfCard / 2;
     let y = this.app.screen.height / 2 + this.sizeOfCard;
     this.cursorSprite.position.set(x, y);
 
-    this.potText.text = `Pot: ${this.game.pot}`;
+    // draw pot amount
+    this.potText.text = `Pot\n${this.game.pot}`;
 
+    // draw community cards
     this.communityCards.getChildAt(0).texture = this.game.communityCards.card1
-      ? getTexture(this.game.communityCards.card1.suit, this.game.communityCards.card1.rank)
+      ? getTexture(this.spritesheet.textures, this.game.communityCards.card1.suit, this.game.communityCards.card1.rank)
       : this.backOfCardTexture;
 
     this.communityCards.getChildAt(1).texture = this.game.communityCards.card2
-      ? getTexture(this.game.communityCards.card2.suit, this.game.communityCards.card2.rank)
+      ? getTexture(this.spritesheet.textures, this.game.communityCards.card2.suit, this.game.communityCards.card2.rank)
       : this.backOfCardTexture;
 
     this.communityCards.getChildAt(2).texture = this.game.communityCards.card3
-      ? getTexture(this.game.communityCards.card3.suit, this.game.communityCards.card3.rank)
+      ? getTexture(this.spritesheet.textures, this.game.communityCards.card3.suit, this.game.communityCards.card3.rank)
       : this.backOfCardTexture;
 
     this.communityCards.getChildAt(3).texture = this.game.communityCards.card4
-      ? getTexture(this.game.communityCards.card4.suit, this.game.communityCards.card4.rank)
+      ? getTexture(this.spritesheet.textures, this.game.communityCards.card4.suit, this.game.communityCards.card4.rank)
       : this.backOfCardTexture;
 
     this.communityCards.getChildAt(4).texture = this.game.communityCards.card5
-      ? getTexture(this.game.communityCards.card5.suit, this.game.communityCards.card5.rank)
+      ? getTexture(this.spritesheet.textures, this.game.communityCards.card5.suit, this.game.communityCards.card5.rank)
       : this.backOfCardTexture;
   }
 
@@ -101,7 +125,7 @@ export class Drawer {
 
   createSprites() {
     this.players.forEach((p) => {
-      let x = p.seatingPosition * this.sizeOfCard * 2;
+      let x = 1.2 * p.seatingPosition * this.sizeOfCard * 2;
       let y = this.app.screen.height / 2;
 
       let playerSprite = new PIXI.Container();

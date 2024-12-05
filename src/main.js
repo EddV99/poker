@@ -21,7 +21,6 @@ drawer.createSprites();
 drawUI(app, controls);
 
 
-
 app.ticker.add((time) => {
   let action = controls.getInput();
   game.update(action);
