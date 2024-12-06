@@ -122,7 +122,7 @@ export class Game {
    * Do the turn for the current player
    * @param {Actions} action
    */
-  updateTurn2(action) {
+  updateTurn(action) {
     let player = this.players[this.playersTurn];
 
     // player might already folded
@@ -184,45 +184,18 @@ export class Game {
     }
   }
 
-  /**
-   * Do the turn for the current player
-   * @param {Actions} action
-   */
-  updateTurn(action) {
-    if (action === Actions.NONE) return;
-
-    let currentPlayer = this.players[this.playersTurn];
-    let difference = this.highestBetSize - this.bets[this.playersTurn];
-    let canCheck = difference === 0;
-    this.turnEnded = this.playersTurn === this.turnEndsOn;
-
-    if (!currentPlayer.folded) {
-      if (Actions.CALL === action) {
-        this.pot += difference;
-        currentPlayer.loseChips(difference);
-      } else if (Actions.FOLD === action) {
-        currentPlayer.folded = true;
-      } else if (Actions.RAISE === action) {
-        // TODO: ui for raises and check if can call with amount
-        let raise = 10;
-        currentPlayer.loseChips(raise);
-        this.pot += raise;
-        this.highestBetSize += raise;
-        this.turnEndsOn = this.playersTurn;
-        if (this.turnEnded) {
-          this.turnEnded = false;
-        }
-      }
-      if (!(Actions.CHECK === action && !canCheck)) {
-        this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
-      }
-    } else {
-      this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
-    }
-  }
-
   checkWinners() {
-    return { winners: [], winnings: [] };
+    let winners = this.players.filter((player) => {
+      return !player.folded;
+    });
+
+    // TODO: take into account all in situations
+    let winnings = [];
+    for (let i = 0; i < winners.length; ++i) {
+      winnings.push(this.pot / winners.length);
+    }
+
+    return { winners: winners, winnings: winnings };
   }
 
   /**
@@ -344,7 +317,7 @@ export class Game {
     } else if (this.turnEnded) {
       this.endTurn();
     } else {
-      this.updateTurn2(action);
+      this.updateTurn(action);
     }
   }
 }
