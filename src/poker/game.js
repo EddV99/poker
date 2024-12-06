@@ -99,16 +99,89 @@ export class Game {
     this.isFlop = true;
     this.isTurn = false;
     this.isRiver = false;
+
+    this.isLiveBlind = true;
+    this.foldedCount = 0;
   }
 
   /**
    * Give players their cards
    */
-  givePlayerCards() {
+  giveCurrentPlayerCard() {
     let player = this.players[this.playersTurn];
 
     if (!player.hand.card1) player.getFirstCard(this.deck);
     else player.getSecondCard(this.deck);
+  }
+
+  nextPlayer() {
+    this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
+  }
+
+  /**
+   * Do the turn for the current player
+   * @param {Actions} action
+   */
+  updateTurn2(action) {
+    let player = this.players[this.playersTurn];
+
+    // player might already folded
+    if (player.folded) {
+      this.nextPlayer();
+      return;
+    }
+
+    if (this.playersTurn === this.turnEndsOn && !this.isLiveBlind) {
+      this.turnEnded = true;
+      return;
+    }
+
+    if (this.foldedCount === this.numberOfPlayers - 1) {
+      let win = this.checkWinners();
+      this.endRound(win.winners, win.winnings);
+      return;
+    }
+
+    let highBetDifference = this.highestBetSize - this.bets[this.playersTurn];
+
+    if (action === Actions.CALL) {
+      // not biggest bet already
+      if (highBetDifference !== 0) {
+        player.loseChips(highBetDifference);
+        this.pot += highBetDifference;
+        this.nextPlayer();
+      }
+    } else if (action === Actions.FOLD) {
+      this.foldedCount++;
+      if (this.isLiveBlind && this.playersTurn === this.turnEndsOn) {
+        this.turnEnded = true;
+        return;
+      }
+      player.folded = true;
+      this.nextPlayer();
+    } else if (action === Actions.NONE) {
+      // TODO: Add timer
+    } else if (action === Actions.CHECK) {
+      if (highBetDifference === 0) {
+        if (this.isLiveBlind && this.playersTurn === this.turnEndsOn) {
+          this.turnEnded = true;
+          return;
+        }
+
+        this.nextPlayer();
+      }
+    } else if (action === Actions.RAISE) {
+      // TODO: add slider to change raise amount
+      let raiseAmount = 10;
+      player.loseChips(raiseAmount);
+      this.pot += highBetDifference + raiseAmount;
+
+      // update where turn ends
+      this.isLiveBlind = false;
+      this.turnEndsOn = this.playersTurn;
+
+      this.nextPlayer();
+    }
   }
 
   /**
@@ -123,12 +196,12 @@ export class Game {
     let canCheck = difference === 0;
     this.turnEnded = this.playersTurn === this.turnEndsOn;
 
-    if (!currentPlayer.out) {
+    if (!currentPlayer.folded) {
       if (Actions.CALL === action) {
         this.pot += difference;
         currentPlayer.loseChips(difference);
       } else if (Actions.FOLD === action) {
-        currentPlayer.out = true;
+        currentPlayer.folded = true;
       } else if (Actions.RAISE === action) {
         // TODO: ui for raises and check if can call with amount
         let raise = 10;
@@ -159,23 +232,26 @@ export class Game {
   endTurn() {
     this.bets = Array(this.numberOfPlayers).fill(0);
     this.highestBetSize = 0;
-    if (this.isFlop) {
-      this.isFlop = false;
-      this.isTurn = true;
-      this.isRiver = false;
-      this.communityCards.flop(this.deck);
-    } else if (this.isTurn) {
-      this.isRiver = true;
-      this.isTurn = false;
-      this.communityCards.turn(this.deck);
-    } else if (this.isRiver) {
-      this.isRiver = false;
-      this.communityCards.river(this.deck);
-    } else {
+
+    if ((!this.isFlop && !this.isTurn && !this.isRiver) || this.foldedCount === this.numberOfPlayers - 1) {
       let win = this.checkWinners();
       this.endRound(win.winners, win.winnings);
       return;
     }
+
+    if (this.isFlop) {
+      this.isFlop = false;
+      this.isTurn = true;
+      this.communityCards.flop(this.deck);
+    } else if (this.isTurn) {
+      this.isTurn = false;
+      this.isRiver = true;
+      this.communityCards.turn(this.deck);
+    } else if (this.isRiver) {
+      this.isRiver = false;
+      this.communityCards.river(this.deck);
+    }
+
     this.turnEnded = false;
     this.playersTurn = (this.bigBlindPos + 1) % this.numberOfPlayers;
   }
@@ -186,20 +262,43 @@ export class Game {
    * @param {number[]} winnings winnings for the winners of this round
    */
   endRound(winners, winnings) {
+    // give player(s) winnings
     winners.forEach((player, index) => {
       player.getChips(winnings[index]);
     });
+
+    // reset pot
     this.pot = 0;
+
+    // cycle big/small blind
     this.smallBlindPos = (this.smallBlindPos + 1) % this.numberOfPlayers;
     this.bigBlindPos = (this.bigBlindPos + 1) % this.numberOfPlayers;
+
+    // left of dealer is always first delt
     this.playersTurn = 0;
+
+    // reset to giving players a new hand
     this.givingPlayersCards = true;
-    this.communityCards.reset();
+    this.gaveFirstCard = false;
+
+    // reset player(s)
     this.players.forEach((player) => {
       player.clear();
+      player.folded = false;
     });
+
+    // reset community cards
+    this.communityCards.reset();
     this.isFlop = true;
+    this.isTurn = false;
+    this.isRiver = false;
+
+    // round over and start of next turn
     this.turnEnded = false;
+    this.isLiveBlind = true;
+    this.foldedCount = 0;
+
+    // reset deck and shuffle
     this.deck.reset();
     this.deck.shuffle();
   }
@@ -210,9 +309,9 @@ export class Game {
    */
   update(action) {
     if (this.givingPlayersCards) {
-      this.givePlayerCards();
-      this.playersTurn = (this.playersTurn + 1) % this.numberOfPlayers;
+      this.giveCurrentPlayerCard();
 
+      this.nextPlayer();
       if (this.playersTurn === 0 && this.gaveFirstCard) {
         this.givingPlayersCards = false;
         this.startOfRound = true;
@@ -220,27 +319,32 @@ export class Game {
         this.gaveFirstCard = true;
       }
     } else if (this.startOfRound) {
-      this.gaveFirstCard = false;
       // TODO: check if could be all in!
+
+      // get big and small blind into pot
       this.players[this.bigBlindPos].loseChips(this.bigBlindAmount);
       this.players[this.smallBlindPos].loseChips(this.smallBlindAmount);
-
-      this.bets[this.bigBlindPos] = this.bigBlindAmount;
-      this.bets[this.smallBlindPos] = this.smallBlindAmount;
-
       this.pot += this.bigBlindAmount;
       this.pot += this.smallBlindAmount;
 
-      this.highestBetSize = this.bigBlindAmount;
-      this.playersTurn = (this.bigBlindPos + 1) % this.numberOfPlayers;
+      // update bets of players
+      this.bets[this.bigBlindPos] = this.bigBlindAmount;
+      this.bets[this.smallBlindPos] = this.smallBlindAmount;
 
+      this.highestBetSize = this.bigBlindAmount;
+      // to the left of big blind starts the round
+      this.playersTurn = (this.bigBlindPos + 1) % this.numberOfPlayers;
+      // turn ends on biggest bet
       this.turnEndsOn = this.bigBlindPos;
       this.turnEnded = false;
 
+      this.isLiveBlind = true;
+
       this.startOfRound = false;
+    } else if (this.turnEnded) {
+      this.endTurn();
     } else {
-      this.updateTurn(action);
-      if (this.turnEnded) this.endTurn();
+      this.updateTurn2(action);
     }
   }
 }

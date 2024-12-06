@@ -30,7 +30,7 @@ export default class Player {
   constructor(chipCount = 1000, out = false, position = 0) {
     this.hand = new PokerHand();
     this.chips = chipCount;
-    this.out = out;
+    this.folded = out;
 
     this.seatingPosition = position;
   }
