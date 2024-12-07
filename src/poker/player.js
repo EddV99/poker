@@ -1,26 +1,48 @@
+import { PokerCard } from "./card";
 import PokerDeck from "./deck";
 
-class PokerHand {
+export class PokerHand {
   /**
    * Create a poker hand object
    * @param  {PokerCard} card1 the first card in the hand
    * @param  {PokerCard} card2 the second card in the hand
    */
   constructor(card1 = null, card2 = null) {
-    this.card1 = card1;
-    this.card2 = card2;
+    /**
+      * @type {PokerCard[]}
+      */
+    this.cards = [card1, card2];
   }
 
   /**
    * Clear the poker hand
    */
   clear() {
-    this.card1 = null;
-    this.card2 = null;
+    this.cards = [null, null];
+  }
+
+  /**
+   *@param {PokerCard} card
+   */
+  set card1(card) {
+    this.cards[0] = card;
+  }
+  /**
+   *@param {PokerCard} card
+   */
+  set card2(card) {
+    this.cards[1] = card;
+  }
+
+  get card1() {
+    return this.cards[0];
+  }
+  get card2() {
+    return this.cards[1];
   }
 }
 
-export default class Player {
+export class Player {
   /**
    * Create a poker player object
    * @param {number} [chipCount=1000] the initial amount of chips this player has

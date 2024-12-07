@@ -1,10 +1,10 @@
 import PokerDeck from "./deck";
-import { PokerCard } from "./card";
-import Player from "./player";
+import { PokerCard, Rank } from "./card";
+import { Player, PokerHand } from "./player";
 import Controls from "../controls/controls";
 import { Actions } from "../controls/controls";
 
-class CommunityCards {
+export class CommunityCards {
   /**
    * Create community cards object
    * @param  {PokerCard} card1 the first card in the community cards
@@ -14,11 +14,7 @@ class CommunityCards {
    * @param  {PokerCard} card5 the fifth card in the community cards
    */
   constructor(card1 = null, card2 = null, card3 = null, card4 = null, card5 = null) {
-    this.card1 = card1;
-    this.card2 = card2;
-    this.card3 = card3;
-    this.card4 = card4;
-    this.card5 = card5;
+    this.cards = [card1, card2, card3, card4, card5];
   }
 
   /**
@@ -26,9 +22,9 @@ class CommunityCards {
    * @param {PokerDeck} deck the deck of cards to draw from
    */
   flop(deck) {
-    this.card1 = deck.draw();
-    this.card2 = deck.draw();
-    this.card3 = deck.draw();
+    this.cards[0] = deck.draw();
+    this.cards[1] = deck.draw();
+    this.cards[2] = deck.draw();
   }
 
   /**
@@ -36,7 +32,7 @@ class CommunityCards {
    * @param {PokerDeck} deck the deck of cards to draw from
    */
   turn(deck) {
-    this.card4 = deck.draw();
+    this.cards[3] = deck.draw();
   }
 
   /**
@@ -44,15 +40,43 @@ class CommunityCards {
    * @param {PokerDeck} deck the deck of cards to draw from
    */
   river(deck) {
-    this.card5 = deck.draw();
+    this.cards[4] = deck.draw();
   }
 
   reset() {
-    this.card1 = null;
-    this.card2 = null;
-    this.card3 = null;
-    this.card4 = null;
-    this.card5 = null;
+    this.cards = [null, null, null, null, null];
+  }
+
+  get card1() {
+    return this.cards[0];
+  }
+  get card2() {
+    return this.cards[1];
+  }
+  get card3() {
+    return this.cards[2];
+  }
+  get card4() {
+    return this.cards[3];
+  }
+  get card5() {
+    return this.cards[4];
+  }
+
+  set card1(card) {
+    this.cards[0] = card;
+  }
+  set card2(card) {
+    this.cards[1] = card;
+  }
+  set card3(card) {
+    this.cards[2] = card;
+  }
+  set card4(card) {
+    this.cards[3] = card;
+  }
+  set card5(card) {
+    this.cards[4] = card;
   }
 }
 
@@ -64,7 +88,7 @@ export class Game {
    */
   constructor(numberOfPlayers, controls) {
     this.communityCards = new CommunityCards();
-    this.deck = new PokerDeck(1);
+    this.deck = new PokerDeck(5);
     this.deck.shuffle();
 
     this.numberOfPlayers = numberOfPlayers;
@@ -153,11 +177,11 @@ export class Game {
       }
     } else if (action === Actions.FOLD) {
       this.foldedCount++;
+      player.folded = true;
       if (this.isLiveBlind && this.playersTurn === this.turnEndsOn) {
         this.turnEnded = true;
         return;
       }
-      player.folded = true;
       this.nextPlayer();
     } else if (action === Actions.NONE) {
       // TODO: Add timer
@@ -189,7 +213,7 @@ export class Game {
       return !player.folded;
     });
 
-    // TODO: take into account all in situations
+    // TODO: take into account all-in situations
     let winnings = [];
     for (let i = 0; i < winners.length; ++i) {
       winnings.push(this.pot / winners.length);
