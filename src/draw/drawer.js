@@ -1,4 +1,4 @@
-import Player from "../poker/player";
+import { Player } from "../poker/player";
 import { cardSpriteSheetData, getTexture } from "../data/spriteSheetData";
 import * as PIXI from "pixi.js";
 import { Game } from "../poker/game";
@@ -72,12 +72,20 @@ export class Drawer {
           ? getTexture(this.spritesheet.textures, p.hand.card2.suit, p.hand.card2.rank)
           : this.backOfCardTexture;
 
+      if (p.folded) {
+        sprite.getChildAt(0).tint = 0x888888;
+        sprite.getChildAt(1).tint = 0x888888;
+      } else {
+        sprite.getChildAt(0).tint = 0xffffff;
+        sprite.getChildAt(1).tint = 0xffffff;
+      }
+
       sprite.getChildAt(2).text = `${p.chips}`;
 
-      if(this.game.bigBlindPos === i){
+      if (this.game.bigBlindPos === i) {
         this.bigBlindText.position.set(sprite.position.x + this.sizeOfCard / 2, sprite.position.y - this.sizeOfCard);
       }
-      if(this.game.smallBlindPos === i){
+      if (this.game.smallBlindPos === i) {
         this.smallBlindText.position.set(sprite.position.x + this.sizeOfCard / 2, sprite.position.y - this.sizeOfCard);
       }
     });

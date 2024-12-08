@@ -12,7 +12,7 @@ div.appendChild(app.canvas);
 
 await loadTextures();
 
-let game = new Game(3);
+let game = new Game(5);
 let controls = new Controls();
 let drawer = new Drawer(game, game.players, app);
 await drawer.loadTextures();
