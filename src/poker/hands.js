@@ -1,8 +1,8 @@
-import { PokerHand } from "./player";
-import { Rank, Suit } from "./card";
-import { CommunityCards } from "./game";
+import { PokerHand } from "./player.js";
+import { PokerCard, Rank, Suit } from "./card.js";
+import { CommunityCards } from "./game.js";
 
-const HandRankings = {
+export const HandRankings = {
   HIGH_CARD: 0,
   PAIR: 1,
   TWO_PAIR: 2,
@@ -28,43 +28,111 @@ export class HandRanking {
     this.hand = hand;
     this.cc = cc;
 
-    this.sorted = [...this.cc.cards];
-    this.sorted.push(...this.hand);
-    this.sorted.sort((a, b) => a.rank - b.rank);
+    this.diamonds = [];
+    this.hearts = [];
+    this.spades = [];
+    this.clubs = [];
 
-    this.setUpMaps();
+    this.hand.cards.forEach((card) => {
+      console.log(card);
+      if (card.suit === Suit.CLUBS) this.clubs.push(card);
+      if (card.suit === Suit.HEARTS) this.hearts.push(card);
+      if (card.suit === Suit.SPADES) this.spades.push(card);
+      if (card.suit === Suit.DIAMONDS) this.diamonds.push(card);
+    });
 
-    if (this.isStraightFlush()) {
-      return HandRankings.STRAIGHT_FLUSH;
+    this.cc.cards.forEach((card) => {
+      console.log(card);
+      if (card.suit === Suit.CLUBS) this.clubs.push(card);
+      if (card.suit === Suit.HEARTS) this.hearts.push(card);
+      if (card.suit === Suit.SPADES) this.spades.push(card);
+      if (card.suit === Suit.DIAMONDS) this.diamonds.push(card);
+    });
+
+    this.diamonds.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+    this.hearts.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+    this.spades.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+    this.clubs.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+
+    console.log("diamonds:");
+    console.log(this.diamonds);
+    console.log("hearts:");
+    console.log(this.hearts);
+    console.log("spades:");
+    console.log(this.spades);
+    console.log("clubs:");
+    console.log(this.clubs);
+
+    //    this.setUpMaps();
+
+    let highest = { rank: -1 };
+
+    if (this.isStraightFlush(highest)) {
+      return HandRankings.STRAIGHT_FLUSH + highest.rank;
     }
+
+    return -1;
   }
 
   /**
-   * @param {PokerHand} hand
-   * @param {CommunityCards} cc
+   * @param {{rank: Rank}} highest
    */
-  isStraightFlush() {
-    let count = 0;
-    let lowest = -1;
-    let highest = -1;
-
-    this.mapCards.forEach((v, k) => {
-      let i = 0;
-      if (!this.mapCards.has(k - 1)) {
-        i = k + 1;
-        while (this.mapCards.has(i)) i++;
-      }
-      if (count < i - k) {
-        count = i - k;
-        lowest = k;
-        highest = i;
-      }
-    });
-
-    if (count > 5) {
-    } else if (count === 5) {
-      for (let i = lowest; i <= highest; ++i) {}
+  isStraightFlush(highest) {
+    if (this.clubs.length >= 5) {
+      return this.isStraightHelper(this.clubs, highest);
     }
+    if (this.diamonds.length >= 5) {
+      return this.isStraightHelper(this.diamonds, highest);
+    }
+    if (this.hearts.length >= 5) {
+      return this.isStraightHelper(this.hearts, highest);
+    }
+    if (this.spades.length >= 5) {
+      return this.isStraightHelper(this.spades, highest);
+    }
+
+    return false;
+  }
+
+  /**
+   * @param {PokerCard[]} cards
+   * @param {{rank: Rank}} highest
+   */
+  isStraightHelper(cards, highest) {
+    let hi = 1;
+    let lo = 0;
+
+    let max = { lo: -1, hi: -1 };
+
+    // 2 3 4 5 6 7 8 9
+    // 4 5 10 J Q K A
+    for (let i = 0; i < cards.length - 1; i++) {
+      if (cards[hi].rank - cards[hi - 1].rank === 1) {
+        hi++;
+      } else {
+        if (max.hi - max.lo < hi - lo) {
+          max.hi = hi;
+          max.lo = lo;
+        }
+        lo = hi;
+        hi++;
+      }
+    }
+
+    if (max.hi - max.lo >= 5) {
+      highest.rank = cards[max.hi].rank;
+      return true;
+    }
+
+    return false;
   }
 
   setUpMaps() {

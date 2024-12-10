@@ -1,8 +1,8 @@
-import PokerDeck from "./deck";
-import { PokerCard, Rank } from "./card";
-import { Player, PokerHand } from "./player";
-import Controls from "../controls/controls";
-import { Actions } from "../controls/controls";
+import PokerDeck from "./deck.js";
+import { PokerCard } from "./card.js";
+import { Player } from "./player.js";
+import Controls from "../controls/controls.js";
+import { Actions } from "../controls/controls.js";
 
 export class CommunityCards {
   /**

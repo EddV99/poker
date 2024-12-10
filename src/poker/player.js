@@ -1,5 +1,4 @@
-import { PokerCard } from "./card";
-import PokerDeck from "./deck";
+import { PokerCard } from "./card.js";
 
 export class PokerHand {
   /**

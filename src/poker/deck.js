@@ -1,4 +1,4 @@
-import { Rank, Suit, PokerCard } from "./card";
+import { Rank, Suit, PokerCard } from "./card.js";
 
 export default class PokerDeck {
   /**
