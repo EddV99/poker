@@ -17,7 +17,7 @@ test("Hand:{C2 C3}  CommunityCards:{C4 C5 C6 CJ CQ} is a straight flush", () => 
   let ranker = new HandRanking();
   let handRank = ranker.getHandRanking(hand, cc);
 
-  expect(handRank).toBe(HandRankings.STRAIGHT_FLUSH + highest);
+  expect(handRank.tier).toBe(HandRankings.STRAIGHT_FLUSH);
 });
 
 test("Hand:{C2 C3}  CommunityCards:{C4 H5 C6 CJ CQ} is not a straight flush", () => {
@@ -34,7 +34,7 @@ test("Hand:{C2 C3}  CommunityCards:{C4 H5 C6 CJ CQ} is not a straight flush", ()
   let ranker = new HandRanking();
   let handRank = ranker.getHandRanking(hand, cc);
 
-  expect(handRank).not.toBe(HandRankings.STRAIGHT_FLUSH + highest);
+  expect(handRank.tier).not.toBe(HandRankings.STRAIGHT_FLUSH);
 });
 
 test("Hand:{CK CA}  CommunityCards:{C4 H5 C10 CJ CQ} is a straight flush", () => {
@@ -51,7 +51,7 @@ test("Hand:{CK CA}  CommunityCards:{C4 H5 C10 CJ CQ} is a straight flush", () =>
   let ranker = new HandRanking();
   let handRank = ranker.getHandRanking(hand, cc);
 
-  expect(handRank).toBe(HandRankings.STRAIGHT_FLUSH + highest);
+  expect(handRank.tier).toBe(HandRankings.STRAIGHT_FLUSH);
 });
 
 test("Hand:{CK CA}  CommunityCards:{SK HK DK CJ CQ} is a four of a kind", () => {
@@ -68,7 +68,7 @@ test("Hand:{CK CA}  CommunityCards:{SK HK DK CJ CQ} is a four of a kind", () => 
   let ranker = new HandRanking();
   let handRank = ranker.getHandRanking(hand, cc);
 
-  expect(handRank).toBe(HandRankings.FOUR_OF_A_KIND + highest);
+  expect(handRank.tier).toBe(HandRankings.FOUR_OF_A_KIND);
 });
 
 test("Hand:{CK CA}  CommunityCards:{SK HK DJ CJ CQ} is a four of a kind", () => {
@@ -85,5 +85,5 @@ test("Hand:{CK CA}  CommunityCards:{SK HK DJ CJ CQ} is a four of a kind", () => 
   let ranker = new HandRanking();
   let handRank = ranker.getHandRanking(hand, cc);
 
-  expect(handRank).toBe(HandRankings.FULL_HOUSE + highest);
+  expect(handRank.tier).toBe(HandRankings.FULL_HOUSE);
 });
