@@ -221,6 +221,13 @@ export class HandRanking {
     if (max.hi - max.lo + 1 >= 5) {
       highest.rank = cards[max.hi].rank;
       return true;
+    } else if (
+      max.hi - max.lo + 1 >= 4 &&
+      cards[max.lo].rank === Rank.TWO &&
+      cards[cards.length - 1].rank === Rank.ACE
+    ) {
+      highest.rank = cards[max.hi].rank;
+      return true;
     }
 
     return false;
