@@ -16,6 +16,7 @@ export class CommunityCards {
    */
   constructor(card1 = null, card2 = null, card3 = null, card4 = null, card5 = null) {
     this.cards = [card1, card2, card3, card4, card5];
+    this.allDrawn = false;
   }
 
   /**
@@ -42,10 +43,12 @@ export class CommunityCards {
    */
   river(deck) {
     this.cards[4] = deck.draw();
+    this.allDrawn = true;
   }
 
   reset() {
     this.cards = [null, null, null, null, null];
+    this.allDrawn = false;
   }
 
   get card1() {
@@ -216,17 +219,26 @@ export class Game {
       return !player.folded;
     });
 
-    let ranking = potential.map((p) => this.ranker.getHandRanking(p.hand, this.communityCards));
     let winners = [];
+    if (this.communityCards.allDrawn && potential.length > 1) {
+      winners = potential.map((p) => {
+        return { value: this.ranker.getHandRanking(p.hand, this.communityCards), pos: p.seatingPosition };
+      });
 
-    let max = -1;
-    for (let i = 0; i < ranking.length; i++) {
-      if (max < ranking[i]) {
-        winners = [potential[i]];
-        max = ranking[i];
-      } else if (max === ranking[i]) {
-        winners.push(potential[i]);
-      }
+      // get biggest hand tier
+      winners.sort((a, b) => a.value.tier - b.value.tier);
+      let biggest = winners[winners.length - 1].value.tier;
+      winners = winners.filter((p) => p.value.tier >= biggest);
+
+      // check for tie-breakers
+      winners = winners.sort((a, b) => a.value.ranking - b.value.ranking);
+      biggest = winners[winners.length - 1].value.ranking;
+      winners = winners.filter((p) => p.value.ranking >= biggest);
+      winners = winners.map((v) => {
+        return this.players[v.pos];
+      });
+    } else {
+      winners = [...potential];
     }
 
     // TODO: take into account all-in situations

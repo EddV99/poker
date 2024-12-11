@@ -31,26 +31,26 @@ export class HandRanking {
 
     let highest = { rank: -1 };
     if (this.isStraightFlush(highest)) {
-      return HandRankings.STRAIGHT_FLUSH + highest.rank;
+      return { tier: HandRankings.STRAIGHT_FLUSH, ranking: highest.rank };
     } else if (this.isFour(highest)) {
-      return HandRankings.FOUR_OF_A_KIND + highest.rank;
+      return { tier: HandRankings.FOUR_OF_A_KIND, ranking: highest.rank };
     } else if (this.isFullHouse(highest)) {
-      return HandRankings.FULL_HOUSE + highest.rank;
+      return { tier: HandRankings.FULL_HOUSE, ranking: highest.rank };
     } else if (this.isFlush(highest)) {
-      return HandRankings.FLUSH + highest.rank;
+      return { tier: HandRankings.FLUSH, ranking: highest.rank };
     } else if (this.isStraight(highest)) {
-      return HandRankings.STRAIGHT + highest.rank;
+      return { tier: HandRankings.STRAIGHT, ranking: highest.rank };
     } else if (this.isThree(highest)) {
-      return HandRankings.THREE_OF_A_KIND + highest.rank;
+      return { tier: HandRankings.THREE_OF_A_KIND, ranking: highest.rank };
     } else if (this.isTwoPair(highest)) {
-      return HandRankings.TWO_PAIR + highest.rank;
+      return { tier: HandRankings.TWO_PAIR, ranking: highest.rank };
     } else if (this.isPair(highest)) {
-      return HandRankings.PAIR + highest.rank;
+      return { tier: HandRankings.PAIR, ranking: highest.rank };
     } else if (this.getHighest(highest)) {
-      return HandRankings.HIGH_CARD + highest.rank;
+      return { tier: HandRankings.HIGH_CARD, ranking: highest.rank };
     }
 
-    return -1;
+    return { tier: -1, ranking: -1 };
   }
 
   getHighest(highest) {
