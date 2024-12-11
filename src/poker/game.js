@@ -3,6 +3,7 @@ import { PokerCard } from "./card.js";
 import { Player } from "./player.js";
 import Controls from "../controls/controls.js";
 import { Actions } from "../controls/controls.js";
+import { HandRanking } from "./hands.js";
 
 export class CommunityCards {
   /**
@@ -88,7 +89,7 @@ export class Game {
    */
   constructor(numberOfPlayers, controls) {
     this.communityCards = new CommunityCards();
-    this.deck = new PokerDeck(5);
+    this.deck = new PokerDeck(1);
     this.deck.shuffle();
 
     this.numberOfPlayers = numberOfPlayers;
@@ -126,6 +127,8 @@ export class Game {
 
     this.isLiveBlind = true;
     this.foldedCount = 0;
+
+    this.ranker = new HandRanking();
   }
 
   /**
@@ -209,15 +212,26 @@ export class Game {
   }
 
   checkWinners() {
-    let winners = this.players.filter((player) => {
+    let potential = this.players.filter((player) => {
       return !player.folded;
     });
 
-    // TODO: take into account all-in situations
-    let winnings = [];
-    for (let i = 0; i < winners.length; ++i) {
-      winnings.push(this.pot / winners.length);
+    let ranking = potential.map((p) => this.ranker.getHandRanking(p.hand, this.communityCards));
+    let winners = [];
+
+    let max = -1;
+    for (let i = 0; i < ranking.length; i++) {
+      if (max < ranking[i]) {
+        winners = [potential[i]];
+        max = ranking[i];
+      } else if (max === ranking[i]) {
+        winners.push(potential[i]);
+      }
     }
+
+    // TODO: take into account all-in situations
+    let split = Math.floor(this.pot / winners.length);
+    let winnings = new Array(winners.length).fill(split);
 
     return { winners: winners, winnings: winnings };
   }

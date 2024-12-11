@@ -12,7 +12,6 @@ export const HandRankings = {
   FULL_HOUSE: 6,
   FOUR_OF_A_KIND: 7,
   STRAIGHT_FLUSH: 8,
-  ROYAL_FLUSH: 9,
 };
 
 // number of cards in hand and community cards
@@ -28,58 +27,147 @@ export class HandRanking {
     this.hand = hand;
     this.cc = cc;
 
-    this.diamonds = [];
-    this.hearts = [];
-    this.spades = [];
-    this.clubs = [];
-
-    this.hand.cards.forEach((card) => {
-      console.log(card);
-      if (card.suit === Suit.CLUBS) this.clubs.push(card);
-      if (card.suit === Suit.HEARTS) this.hearts.push(card);
-      if (card.suit === Suit.SPADES) this.spades.push(card);
-      if (card.suit === Suit.DIAMONDS) this.diamonds.push(card);
-    });
-
-    this.cc.cards.forEach((card) => {
-      console.log(card);
-      if (card.suit === Suit.CLUBS) this.clubs.push(card);
-      if (card.suit === Suit.HEARTS) this.hearts.push(card);
-      if (card.suit === Suit.SPADES) this.spades.push(card);
-      if (card.suit === Suit.DIAMONDS) this.diamonds.push(card);
-    });
-
-    this.diamonds.sort((a, b) => {
-      return a.rank - b.rank;
-    });
-    this.hearts.sort((a, b) => {
-      return a.rank - b.rank;
-    });
-    this.spades.sort((a, b) => {
-      return a.rank - b.rank;
-    });
-    this.clubs.sort((a, b) => {
-      return a.rank - b.rank;
-    });
-
-    console.log("diamonds:");
-    console.log(this.diamonds);
-    console.log("hearts:");
-    console.log(this.hearts);
-    console.log("spades:");
-    console.log(this.spades);
-    console.log("clubs:");
-    console.log(this.clubs);
-
-    //    this.setUpMaps();
+    this.setupHelperData();
 
     let highest = { rank: -1 };
-
     if (this.isStraightFlush(highest)) {
       return HandRankings.STRAIGHT_FLUSH + highest.rank;
+    } else if (this.isFour(highest)) {
+      return HandRankings.FOUR_OF_A_KIND + highest.rank;
+    } else if (this.isFullHouse(highest)) {
+      return HandRankings.FULL_HOUSE + highest.rank;
+    } else if (this.isFlush(highest)) {
+      return HandRankings.FLUSH + highest.rank;
+    } else if (this.isStraight(highest)) {
+      return HandRankings.STRAIGHT + highest.rank;
+    } else if (this.isThree(highest)) {
+      return HandRankings.THREE_OF_A_KIND + highest.rank;
+    } else if (this.isTwoPair(highest)) {
+      return HandRankings.TWO_PAIR + highest.rank;
+    } else if (this.isPair(highest)) {
+      return HandRankings.PAIR + highest.rank;
+    } else if (this.getHighest(highest)) {
+      return HandRankings.HIGH_CARD + highest.rank;
     }
 
     return -1;
+  }
+
+  getHighest(highest) {
+    highest.rank = this.sortedRank[this.sortedRank.length - 1].rank;
+  }
+
+  isPair(highest) {
+    // TODO: use kicker to determine actuall winner
+    let hasOne = false;
+    this.mapCards.forEach((v, k) => {
+      if (v.count >= 2) {
+        if (highest.rank < k) highest.rank = k;
+        hasOne = true;
+      }
+    });
+    return hasOne;
+  }
+
+  isTwoPair(highest) {
+    // TODO: use kicker to determine actuall winner
+    let hasOne = false;
+    let hasTwo = false;
+    let pairOneRank = -1;
+    let pairTwoRank = -1;
+    this.mapCards.forEach((v, k) => {
+      if (v.count >= 2) {
+        if (!hasOne) hasOne = true;
+        else hasTwo = true;
+
+        if (pairOneRank < k) pairOneRank = k;
+        else if (pairTwoRank < k) pairTwoRank = k;
+      }
+    });
+    if (hasOne && hasTwo) {
+      highest.rank = pairOneRank * pairOneRank + pairTwoRank * pairTwoRank;
+      return true;
+    }
+  }
+
+  /**
+   * @param {{rank: Rank}} highest
+   */
+  isThree(highest) {
+    let is = false;
+    this.mapCards.forEach((v, k) => {
+      if (v.count >= 3) {
+        is = true;
+        if (highest.rank < k) highest.rank = k;
+      }
+    });
+
+    return is;
+  }
+
+  isStraight(highest) {
+    return this.isStraightHelper(this.sortedRank, highest);
+  }
+
+  isFlush(highest) {
+    if (this.clubs.length >= 5) {
+      this.clubs.forEach((card) => {
+        if (highest.rank < card.rank) highest.rank = card.rank;
+      });
+      return true;
+    }
+    if (this.diamonds.length >= 5) {
+      this.diamonds.forEach((card) => {
+        if (highest.rank < card.rank) highest.rank = card.rank;
+      });
+      return true;
+    }
+    if (this.hearts.length >= 5) {
+      this.hearts.forEach((card) => {
+        if (highest.rank < card.rank) highest.rank = card.rank;
+      });
+      return true;
+    }
+    if (this.spades.length >= 5) {
+      this.spades.forEach((card) => {
+        if (highest.rank < card.rank) highest.rank = card.rank;
+      });
+      return true;
+    }
+  }
+
+  isFullHouse(highest) {
+    let hasThree = false;
+    let hasTwo = false;
+    let threeRank = -1;
+    let twoRank = -1;
+    this.mapCards.forEach((v, k) => {
+      if (v.count >= 3) {
+        if (threeRank < k) threeRank = k;
+        hasThree = true;
+      } else if (v.count >= 2) {
+        if (twoRank < k) twoRank = k;
+        hasTwo = true;
+      }
+    });
+    if (hasThree && hasTwo) {
+      highest.rank = threeRank * threeRank + twoRank;
+      return true;
+    }
+  }
+  /**
+   * @param {{rank: Rank}} highest
+   */
+  isFour(highest) {
+    let is = false;
+    this.mapCards.forEach((v, k) => {
+      if (v.count === 4) {
+        is = true;
+        highest.rank = k;
+      }
+    });
+
+    return is;
   }
 
   /**
@@ -107,27 +195,30 @@ export class HandRanking {
    * @param {{rank: Rank}} highest
    */
   isStraightHelper(cards, highest) {
-    let hi = 1;
+    let hi = 0;
     let lo = 0;
 
     let max = { lo: -1, hi: -1 };
 
-    // 2 3 4 5 6 7 8 9
-    // 4 5 10 J Q K A
-    for (let i = 0; i < cards.length - 1; i++) {
-      if (cards[hi].rank - cards[hi - 1].rank === 1) {
+    while (hi < cards.length - 1) {
+      if (cards[hi + 1].rank - cards[hi].rank === 1) {
         hi++;
       } else {
         if (max.hi - max.lo < hi - lo) {
           max.hi = hi;
           max.lo = lo;
         }
-        lo = hi;
-        hi++;
+        lo = hi + 1;
+        hi = hi + 2;
       }
     }
 
-    if (max.hi - max.lo >= 5) {
+    if (max.hi - max.lo < hi - lo) {
+      max.hi = hi;
+      max.lo = lo;
+    }
+
+    if (max.hi - max.lo + 1 >= 5) {
       highest.rank = cards[max.hi].rank;
       return true;
     }
@@ -135,7 +226,7 @@ export class HandRanking {
     return false;
   }
 
-  setUpMaps() {
+  setupHelperData() {
     /**
      * Maps a Cards rank to an object
      * @type {Map<Rank, {suitCount: Map<Suit, number>, count: number}>}
@@ -170,6 +261,44 @@ export class HandRanking {
     });
     this.cc.cards.forEach((card) => {
       add(card);
+    });
+
+    this.diamonds = [];
+    this.hearts = [];
+    this.spades = [];
+    this.clubs = [];
+
+    this.hand.cards.forEach((card) => {
+      if (card.suit === Suit.CLUBS) this.clubs.push(card);
+      if (card.suit === Suit.HEARTS) this.hearts.push(card);
+      if (card.suit === Suit.SPADES) this.spades.push(card);
+      if (card.suit === Suit.DIAMONDS) this.diamonds.push(card);
+    });
+
+    this.cc.cards.forEach((card) => {
+      if (card.suit === Suit.CLUBS) this.clubs.push(card);
+      if (card.suit === Suit.HEARTS) this.hearts.push(card);
+      if (card.suit === Suit.SPADES) this.spades.push(card);
+      if (card.suit === Suit.DIAMONDS) this.diamonds.push(card);
+    });
+
+    this.diamonds.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+    this.hearts.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+    this.spades.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+    this.clubs.sort((a, b) => {
+      return a.rank - b.rank;
+    });
+
+    this.sortedRank = [...this.hand.cards];
+    this.sortedRank.push(...this.cc.cards);
+    this.sortedRank.sort((a, b) => {
+      return a.rank - b.rank;
     });
   }
 }
