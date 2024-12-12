@@ -17,13 +17,15 @@ let drawer = new Drawer(game, game.players, app);
 await drawer.loadTextures();
 drawer.createSprites();
 
-let ui = new UI();
+let ui = new UI(app, controls);
 await ui.loadTextures();
-ui.drawUI(app, controls);
+
+ui.showGameUI();
 
 app.ticker.add((time) => {
   let action = controls.getInput();
   game.update(action);
   drawer.draw();
+  ui.draw();
   controls.reset();
 });
