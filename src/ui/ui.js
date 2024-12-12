@@ -1,75 +1,85 @@
 import * as PIXI from "pixi.js";
 import Controls from "../controls/controls";
 
-let checkButtonTexture = null;
-let foldButtonTexture = null;
-let raiseButtonTexture = null;
-let callButtonTexture = null;
+export class UI {
+  constructor() {
+    this.checkButtonTexture = null;
+    this.foldButtonTexture = null;
+    this.raiseButtonTexture = null;
+    this.callButtonTexture = null;
 
-export async function loadTextures() {
-  checkButtonTexture = await PIXI.Assets.load("check-button.png");
-  foldButtonTexture = await PIXI.Assets.load("fold-button.png");
-  raiseButtonTexture = await PIXI.Assets.load("raise-button.png");
-  callButtonTexture = await PIXI.Assets.load("call-button.png");
-}
+    this.WIDTH = 100;
+    this.HEIGHT = 50;
+  }
 
-/**
- * Draw the UI of the game
- * @param {PIXI.Application<PIXI.Renderer>} app
- * @param {Controls} controls
- */
-export function drawUI(app, controls) {
-  const WIDTH = 100;
-  const HEIGHT = 50;
-  const OFFSET = HEIGHT + 10;
-  const POS_X = app.screen.width * 0.07 - WIDTH / 2;
-  const POS_Y = app.screen.height * 0.1 - HEIGHT / 2;
+  async loadTextures() {
+    this.checkButtonTexture = await PIXI.Assets.load("check-button.png");
+    this.foldButtonTexture = await PIXI.Assets.load("fold-button.png");
+    this.raiseButtonTexture = await PIXI.Assets.load("raise-button.png");
+    this.callButtonTexture = await PIXI.Assets.load("call-button.png");
+  }
 
-  const checkButton = new PIXI.Sprite(checkButtonTexture);
-  checkButton.width = WIDTH;
-  checkButton.height = HEIGHT;
-  checkButton.position.set(POS_X, POS_Y);
+  /**
+   * Draw the UI for the menu
+   */
+  drawMenu(app, controls) {}
 
-  checkButton.on("pointerdown", (event) => {
-    controls.pressCheckButton();
-  });
-  checkButton.eventMode = "static";
+  /**
+   * Draw the UI of the game
+   * @param {PIXI.Application<PIXI.Renderer>} app
+   * @param {Controls} controls
+   */
+  drawUI(app, controls) {
+    const OFFSET = this.HEIGHT + 10;
+    const POS_X = app.screen.width * 0.07 - this.WIDTH / 2;
+    const POS_Y = app.screen.height * 0.1 - this.HEIGHT / 2;
 
-  app.stage.addChild(checkButton);
+    const checkButton = new PIXI.Sprite(this.checkButtonTexture);
+    checkButton.width = this.WIDTH;
+    checkButton.height = this.HEIGHT;
+    checkButton.position.set(POS_X, POS_Y);
 
-  const foldButton = new PIXI.Sprite(foldButtonTexture);
-  foldButton.width = WIDTH;
-  foldButton.height = HEIGHT;
-  foldButton.position.set(POS_X, POS_Y + OFFSET);
+    checkButton.on("pointerdown", (event) => {
+      controls.pressCheckButton();
+    });
+    checkButton.eventMode = "static";
 
-  foldButton.on("pointerdown", (event) => {
-    controls.pressFoldButton();
-  });
-  foldButton.eventMode = "static";
+    app.stage.addChild(checkButton);
 
-  app.stage.addChild(foldButton);
+    const foldButton = new PIXI.Sprite(this.foldButtonTexture);
+    foldButton.width = this.WIDTH;
+    foldButton.height = this.HEIGHT;
+    foldButton.position.set(POS_X, POS_Y + OFFSET);
 
-  const raiseButton = new PIXI.Sprite(raiseButtonTexture);
-  raiseButton.width = WIDTH;
-  raiseButton.height = HEIGHT;
-  raiseButton.position.set(POS_X, POS_Y + 2 * OFFSET);
+    foldButton.on("pointerdown", (event) => {
+      controls.pressFoldButton();
+    });
+    foldButton.eventMode = "static";
 
-  raiseButton.on("pointerdown", (event) => {
-    controls.pressRaiseButton();
-  });
-  raiseButton.eventMode = "static";
+    app.stage.addChild(foldButton);
 
-  app.stage.addChild(raiseButton);
+    const raiseButton = new PIXI.Sprite(this.raiseButtonTexture);
+    raiseButton.width = this.WIDTH;
+    raiseButton.height = this.HEIGHT;
+    raiseButton.position.set(POS_X, POS_Y + 2 * OFFSET);
 
-  const callButton = new PIXI.Sprite(callButtonTexture);
-  callButton.width = WIDTH;
-  callButton.height = HEIGHT;
-  callButton.position.set(POS_X, POS_Y + 3 * OFFSET);
+    raiseButton.on("pointerdown", (event) => {
+      controls.pressRaiseButton();
+    });
+    raiseButton.eventMode = "static";
 
-  callButton.on("pointerdown", (event) => {
-    controls.pressCallButton();
-  });
-  callButton.eventMode = "static";
+    app.stage.addChild(raiseButton);
 
-  app.stage.addChild(callButton);
+    const callButton = new PIXI.Sprite(this.callButtonTexture);
+    callButton.width = this.WIDTH;
+    callButton.height = this.HEIGHT;
+    callButton.position.set(POS_X, POS_Y + 3 * OFFSET);
+
+    callButton.on("pointerdown", (event) => {
+      controls.pressCallButton();
+    });
+    callButton.eventMode = "static";
+
+    app.stage.addChild(callButton);
+  }
 }
