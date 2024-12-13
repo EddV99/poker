@@ -12,6 +12,7 @@ export class UI {
     this.foldButtonTexture = null;
     this.raiseButtonTexture = null;
     this.callButtonTexture = null;
+    this.startButtonTexture = null;
 
     this.WIDTH = 100;
     this.HEIGHT = 50;
@@ -48,6 +49,8 @@ export class UI {
     this.foldButtonTexture = await PIXI.Assets.load("fold-button.png");
     this.raiseButtonTexture = await PIXI.Assets.load("raise-button.png");
     this.callButtonTexture = await PIXI.Assets.load("call-button.png");
+    this.startButtonTexture = await PIXI.Assets.load("play-button.png");
+    this.startButtonTexture.source.scaleMode = 'nearest'
   }
 
   /**
@@ -63,7 +66,20 @@ export class UI {
   /**
    * Draw the UI for the menu
    */
-  #drawMenu() {}
+  #drawMenu() {
+    const startButton = new PIXI.Sprite(this.startButtonTexture);
+
+    startButton.setSize(120);
+
+    startButton.on("pointerdown", (event) => {
+      this.controls.pressStartButton();
+    });
+
+    startButton.eventMode = "static";
+
+    this.app.stage.addChild(startButton);
+    this.addedToScene.push(startButton);
+  }
 
   /**
    * Draw the UI of the game

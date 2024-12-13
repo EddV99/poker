@@ -27,6 +27,8 @@ export class Drawer {
 
     this.smallBlindText = null;
     this.bigBlindText = null;
+
+    this.dirty = true;
   }
 
   async loadTextures() {
@@ -42,20 +44,16 @@ export class Drawer {
     this.cursorSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
     this.cursorSprite.position.set(0, 0);
     this.cursorSprite.setSize(10);
-    this.app.stage.addChild(this.cursorSprite);
 
     await PIXI.Assets.load("inter");
     this.potText = new PIXI.Text({ text: "Pot", fontFamily: "inter" });
     this.potText.position.set(this.app.screen.width / 2 - 15, 210);
-    this.app.stage.addChild(this.potText);
 
     this.smallBlindText = new PIXI.Text({ text: "SB", fontFamily: "inter" });
     this.smallBlindText.position.set(0, 0);
-    this.app.stage.addChild(this.smallBlindText);
 
     this.bigBlindText = new PIXI.Text({ text: "BB", fontFamily: "inter" });
     this.bigBlindText.position.set(0, 0);
-    this.app.stage.addChild(this.bigBlindText);
   }
 
   draw() {
@@ -134,6 +132,11 @@ export class Drawer {
   }
 
   createSprites() {
+    this.app.stage.addChild(this.cursorSprite);
+    this.app.stage.addChild(this.potText);
+    this.app.stage.addChild(this.smallBlindText);
+    this.app.stage.addChild(this.bigBlindText);
+
     this.players.forEach((p) => {
       let x = 1.2 * p.seatingPosition * this.sizeOfCard * 2 + 100;
       let y = this.app.screen.height / 2 + 100;
@@ -162,6 +165,7 @@ export class Drawer {
       this.playerSprites.push(playerSprite);
       this.app.stage.addChild(playerSprite);
     });
+
     this.communityCards = new PIXI.Container();
 
     let c1 = new PIXI.Sprite(

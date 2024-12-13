@@ -4,6 +4,7 @@ export const Actions = {
   RAISE: 1,
   FOLD: 2,
   CHECK: 3,
+  START: 4,
 };
 
 export default class Controls {
@@ -13,6 +14,7 @@ export default class Controls {
       RAISE: false,
       FOLD: false,
       CHECK: false,
+      START: false,
     };
   }
   pressCallButton() {
@@ -27,12 +29,16 @@ export default class Controls {
   pressCheckButton() {
     this.clicked.CHECK = true;
   }
+  pressStartButton() {
+    this.clicked.START = true;
+  }
 
   reset() {
     this.clicked.CALL = false;
     this.clicked.RAISE = false;
     this.clicked.FOLD = false;
     this.clicked.CHECK = false;
+    this.clicked.START = false;
   }
 
   getInput() {
@@ -40,6 +46,7 @@ export default class Controls {
     if (this.clicked.RAISE) return Actions.RAISE;
     if (this.clicked.FOLD) return Actions.FOLD;
     if (this.clicked.CHECK) return Actions.CHECK;
+    if (this.clicked.START) return Actions.START;
     return Actions.NONE;
   }
 }
